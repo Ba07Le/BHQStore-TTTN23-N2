@@ -323,9 +323,9 @@ useEffect(() => {
                         <Typography textAlign={'center'}>Từ trang {(page-1)*ITEMS_PER_PAGE+1} đến {page*ITEMS_PER_PAGE>totalResults?totalResults:page*ITEMS_PER_PAGE} có {totalResults} sản phẩm</Typography>
                     </Stack>
 
-                                     </Stack>
+                    </Stack>
 
-                         </Stack>
+        </Stack>
         </>
     }
 

@@ -1,198 +1,197 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import { TextField, InputAdornment } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import Typography from '@mui/material/Typography';
-import { useState } from 'react';
-import Menu from '@mui/material/Menu';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import { useLocation } from 'react-router-dom';
+import * as React from 'react'
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  TextField,
+  InputAdornment,
+  Typography,
+  Menu,
+  Avatar,
+  Tooltip,
+  MenuItem,
+  Badge,
+  Stack,
+  Box,
+  useMediaQuery,
+  useTheme,
+  Divider,
+} from '@mui/material'
 
-import { Link, useNavigate } from 'react-router-dom';
-import { Badge, Button, Chip, Stack, useMediaQuery, useTheme } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectUserInfo } from '../../user/UserSlice';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import { selectCartItems } from '../../cart/CartSlice';
-import { selectLoggedInUser } from '../../auth/AuthSlice';
-import { selectWishlistItems } from '../../wishlist/WishlistSlice';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import TuneIcon from '@mui/icons-material/Tune';
-import { selectProductIsFilterOpen, toggleFilters } from '../../products/ProductSlice';
+import MenuIcon from '@mui/icons-material/Menu'
+import SearchIcon from '@mui/icons-material/Search'
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
+
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { selectUserInfo } from '../../user/UserSlice'
+import { selectCartItems } from '../../cart/CartSlice'
+import { selectLoggedInUser } from '../../auth/AuthSlice'
+import { selectWishlistItems } from '../../wishlist/WishlistSlice'
+import {
+  selectProductIsFilterOpen,
+  toggleFilters,
+} from '../../products/ProductSlice'
 
 export const Navbar = ({ isProductList = false }) => {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null)
+  const [search, setSearch] = React.useState('')
 
-  const userInfo = useSelector(selectUserInfo);
-  const cartItems = useSelector(selectCartItems);
-  const loggedInUser = useSelector(selectLoggedInUser);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const dispatch = useDispatch();
-  const theme = useTheme();
-  const is480 = useMediaQuery(theme.breakpoints.down(480));
+  const userInfo = useSelector(selectUserInfo)
+  const cartItems = useSelector(selectCartItems)
+  const wishlistItems = useSelector(selectWishlistItems)
+  const loggedInUser = useSelector(selectLoggedInUser)
+  const isProductFilterOpen = useSelector(selectProductIsFilterOpen)
 
-  const wishlistItems = useSelector(selectWishlistItems);
-  const isProductFilterOpen = useSelector(selectProductIsFilterOpen);
-  const [search, setSearch] = useState('');
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
+  const handleOpenUserMenu = (e) => setAnchorElUser(e.currentTarget)
+  const handleCloseUserMenu = () => setAnchorElUser(null)
 
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  const handleToggleFilters = () => {
-    dispatch(toggleFilters());
-  };
-
-  const userSettings = [
-    { name: "Trang Chủ", to: "/" },
-    { name: "Profile", to: "/profile" },
-    { name: "Đơn Hàng Của Tôi", to: "/orders" },
-    { name: "Đăng Xuất", to: "/logout" },
-  ];
-
-  const adminSettings = [
-    { name: "Trang Chủ", to: "/" },
-    { name: "Các Đơn Hàng", to: "/admin/orders" },
-    { name: "Đăng Xuất", to: "/logout" },
-  ];
-
-  const settings = loggedInUser?.isAdmin ? adminSettings : userSettings;
+  /* 🔑 KHÁC NHAU CHỈ Ở MENU ITEMS */
+  const menuItems = loggedInUser?.isAdmin
+    ? [
+        { label: 'Trang chủ', to: '/' },
+        { label: 'Thêm sản phẩm', to: '/admin/add-product' },
+        { label: 'Quản lý đơn hàng', to: '/admin/orders' },
+        { label: 'Đăng xuất', to: '/logout' },
+      ]
+    : [
+        { label: 'Trang chủ', to: '/' },
+        { label: 'Profile', to: '/profile' },
+        { label: 'Đơn hàng của tôi', to: '/orders' },
+        { label: 'Đăng xuất', to: '/logout' },
+      ]
 
   return (
-    <AppBar position="sticky" sx={{ backgroundColor: "white", boxShadow: "none", color: "text.primary" }}>
-      <Toolbar sx={{ p: 1, height: "4rem", display: "flex", justifyContent: "space-around" }}>
-        <Typography
-          variant="h6"
-          noWrap
-          component="a"
-          href="/"
-          sx={{
-            mr: 2,
-            display: { xs: 'none', md: 'flex' },
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'inherit',
-            textDecoration: 'none',
-          }}
-        >
-          BHQ Store
-        </Typography>
-
-        
-  <TextField
-  size="small"
-  placeholder="Tìm sản phẩm..."
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  onKeyDown={(e) => {
-    if (e.key === "Enter") {
-navigate(`/products?search=${search}`);
-    }
-  }}
-  InputProps={{
-    startAdornment: (
-      <InputAdornment position="start">
-        <SearchIcon />
-      </InputAdornment>
-    ),
-  }}
-/>
-
-
-
-
-        <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'center'} columnGap={2}>
-          <Tooltip title="Open settings">
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar alt={userInfo?.name} src="null" />
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        backgroundColor: '#fff',
+        borderBottom: '1px solid #eee',
+        height: 64,                 // ⚠️ CỐ ĐỊNH CHIỀU CAO
+        justifyContent: 'center',
+      }}
+    >
+      <Toolbar
+        sx={{
+          minHeight: '64px !important', // ⚠️ TRÁNH BỊ ĐẨY CAO
+          px: 2,
+        }}
+      >
+        {/* LEFT */}
+        <Stack direction="row" alignItems="center" spacing={2} flex={1}>
+          {isProductList && (
+            <IconButton
+              onClick={() => dispatch(toggleFilters())}
+              sx={{
+                bgcolor: isProductFilterOpen ? 'grey.200' : 'transparent',
+              }}
+            >
+              <MenuIcon />
             </IconButton>
-          </Tooltip>
+          )}
 
-          <Menu
-            sx={{ mt: '45px' }}
-            id="menu-appbar"
-            anchorEl={anchorElUser}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
+          <Typography
+            component={Link}
+            to="/"
+            sx={{
+              fontWeight: 800,
+              letterSpacing: 1,
+              textDecoration: 'none',
+              color: 'text.primary',
+              fontSize: '1.1rem',
+            }}
           >
-            {loggedInUser?.isAdmin && (
-              <MenuItem onClick={handleCloseUserMenu}>
-                <Typography
-                  component={Link}
-                  color={'text.primary'}
-                  sx={{ textDecoration: "none" }}
-                  to="/admin/add-product"
-                  textAlign="center"
-                >
-                  Thêm sản phẩm mới
-                </Typography>
-              </MenuItem>
-            )}
-
-            {settings.map((setting) => (
-              <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
-                <Typography
-                  component={Link}
-                  color={'text.primary'}
-                  sx={{ textDecoration: "none" }}
-                  to={setting.to}
-                  textAlign="center"
-                >
-                  {setting.name}
-                </Typography>
-              </MenuItem>
-            ))}
-          </Menu>
-
-          <Typography variant='h6' fontWeight={300}>
-            {is480
-              ? userInfo?.name?.toString().split(" ")[0]
-              : `Chào👋, ${userInfo?.name}`}
+            BHQ<span style={{ color: '#1976d2' }}>Store</span>
           </Typography>
 
-          {loggedInUser?.isAdmin && <Button variant='contained'>ADMIN</Button>}
+          {!isMobile && (
+            <TextField
+              size="small"
+              placeholder="Tìm sản phẩm..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && search.trim()) {
+                  navigate(`/products?search=${search}`)
+                }
+              }}
+              sx={{ width: 280 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
+        </Stack>
 
-          <Stack sx={{ flexDirection: "row", columnGap: "1rem", alignItems: "center", justifyContent: "center" }}>
-            {cartItems?.length > 0 && (
-              <Badge badgeContent={cartItems.length} color='error'>
-                <IconButton onClick={() => navigate("/cart")}>
-                  <ShoppingCartOutlinedIcon />
-                </IconButton>
-              </Badge>
-            )}
+        {/* RIGHT */}
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <Badge badgeContent={wishlistItems?.length} color="error">
+            <IconButton component={Link} to="/wishlist">
+              <FavoriteBorderIcon />
+            </IconButton>
+          </Badge>
 
-            {!loggedInUser?.isAdmin && (
-              <Stack>
-                <Badge badgeContent={wishlistItems?.length} color='error'>
-                  <IconButton component={Link} to={"/wishlist"}>
-                    <FavoriteBorderIcon />
-                  </IconButton>
-                </Badge>
-              </Stack>
-            )}
+          <Badge badgeContent={cartItems?.length} color="error">
+            <IconButton onClick={() => navigate('/cart')}>
+              <ShoppingCartOutlinedIcon />
+            </IconButton>
+          </Badge>
 
-            {isProductList && (
-              <IconButton onClick={handleToggleFilters}>
-                <TuneIcon sx={{ color: isProductFilterOpen ? "black" : "" }} />
-              </IconButton>
-            )}
-          </Stack>
+          <Tooltip title="Tài khoản">
+            <IconButton onClick={handleOpenUserMenu}>
+              <Avatar sx={{ width: 36, height: 36 }}>
+                {userInfo?.name?.charAt(0)}
+              </Avatar>
+            </IconButton>
+          </Tooltip>
         </Stack>
       </Toolbar>
+
+      {/* MENU USER / ADMIN (CHUNG UI) */}
+      <Menu
+        anchorEl={anchorElUser}
+        open={Boolean(anchorElUser)}
+        onClose={handleCloseUserMenu}
+        PaperProps={{
+          sx: {
+            mt: 1,
+            minWidth: 200,
+            borderRadius: 2,
+          },
+        }}
+      >
+        <Box px={2} py={1}>
+          <Typography fontWeight={600}>{userInfo?.name}</Typography>
+          <Typography variant="caption" color="text.secondary">
+            {loggedInUser?.isAdmin ? 'Admin' : 'Khách hàng'}
+          </Typography>
+        </Box>
+
+        <Divider />
+
+        {menuItems.map((item) => (
+          <MenuItem
+            key={item.label}
+            component={Link}
+            to={item.to}
+            onClick={handleCloseUserMenu}
+          >
+            {item.label}
+          </MenuItem>
+        ))}
+      </Menu>
     </AppBar>
-  );
-};
+  )
+}

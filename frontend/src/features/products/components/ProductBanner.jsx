@@ -1,50 +1,80 @@
-import SwipeableViews from 'react-swipeable-views';
-import { autoPlay } from 'react-swipeable-views-utils';
-import MobileStepper from '@mui/material/MobileStepper';
-import { Box, useTheme } from '@mui/material';
-import { useState } from 'react';
+import { Box, MobileStepper } from "@mui/material"
+import { motion, AnimatePresence } from "framer-motion"
+import { useEffect, useState } from "react"
 
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
+export const ProductBanner = ({ images = [] }) => {
+  const [activeStep, setActiveStep] = useState(0)
+  const maxSteps = images.length
 
-export const ProductBanner = ({images}) => {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % maxSteps)
+    }, 4000)
 
-    const theme=useTheme()
-
-    const [activeStep, setActiveStep] = useState(0);
-    const maxSteps = images.length;
-
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    };
-
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
-
-    const handleStepChange = (step) => {
-        setActiveStep(step);
-    };
+    return () => clearInterval(timer)
+  }, [maxSteps])
 
   return (
-    <>
-    <AutoPlaySwipeableViews style={{overflow:"hidden"}} width={'100%'} height={'100%'} axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'} index={activeStep} onChangeIndex={handleStepChange} enableMouseEvents >
-        {
-        images.map((image,index) => (
-        <div key={index} style={{width:"100%",height:'100%'}}>
-            {
-            Math.abs(activeStep - index) <= 2 
-                ?
-                <Box component="img" sx={{width:'100%',objectFit:"contain"}} src={image} alt={'Banner Image'} />
-                :
-                    null
-            }
+    <Box
+      sx={{
+        width: "100%",
+        height: "100vh",
+        position: "relative",
+        overflow: "hidden",
+        backgroundColor: "#000",
+      }}
+    >
+    
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={activeStep}
+          src={images[activeStep]}
+          alt="banner"
+          initial={{ opacity: 0, scale: 1.03 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8 }}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            position: "absolute",
+            inset: 0,
+          }}
+        />
+      </AnimatePresence>
+
+
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        style={{
+          position: "absolute",
+          bottom: 24,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ alignSelf: "center" }}>
+          <MobileStepper
+            steps={maxSteps}
+            position="static"
+            activeStep={activeStep}
+            sx={{
+              background: "transparent",
+              "& .MuiMobileStepper-dot": {
+                backgroundColor: "rgba(255,255,255,0.4)",
+              },
+              "& .MuiMobileStepper-dotActive": {
+                backgroundColor: "#fff",
+              },
+            }}
+          />
         </div>
-        ))
-        }
-    </AutoPlaySwipeableViews>
-    <div style={{alignSelf:'center'}}>
-        <MobileStepper steps={maxSteps} position="static" activeStep={activeStep}/>
-    </div>
-    </>
+      </motion.div>
+    </Box>
   )
 }

@@ -6,6 +6,7 @@ exports.create = async (req, res) => {
  
     data.price = Number(data.price);
     data.stockQuantity = Number(data.stockQuantity);
+    data.description = data.description || "";
  
     if (!req.files?.thumbnail?.[0]) {
       return res.status(400).json({ message: "Cần có thumbnail sản phẩm" });

@@ -12,6 +12,8 @@ import { AddProductPage, AdminOrdersPage, CartPage, CheckoutPage, ForgotPassword
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ProductList } from './features/products/components/ProductList';
+import "./assets/productDescription.css";
+import AIChatWidget from "./components/AIChatWidget";
 
 
 function App() {
@@ -67,7 +69,12 @@ function App() {
   )
 
   
-  return isAuthChecked ? <RouterProvider router={routes}/> : "";
+  return isAuthChecked ? (
+  <>
+    <RouterProvider router={routes}/>
+    <AIChatWidget />
+  </>
+) : "";
 }
 
 export default App;

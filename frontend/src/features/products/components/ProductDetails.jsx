@@ -243,11 +243,13 @@ export const ProductDetails = () => {
                                         </Typography>
                                     </Stack>
 
-                                    <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                                        {product?.description}
-                                    </Typography>
-                                    
-                                    <hr style={{ border: '0.5px solid #eee', width: '100%' }} />
+                                                <Box
+  className="product-description"
+  sx={{ lineHeight: 1.7, color: "text.secondary" }}
+  dangerouslySetInnerHTML={{ __html: product?.description }}
+/>
+
+<hr style={{ border: '0.5px solid #eee', width: '100%' }} />
 
                                    
                                     {!loggedInUser?.isAdmin && (
