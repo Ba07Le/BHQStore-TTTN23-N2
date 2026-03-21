@@ -1,11 +1,17 @@
 import {axiosi} from '../../config/axios'
 
-export const addToCart=async(item)=>{
+export const addToCart = async (item) => {
     try {
-        const res=await axiosi.post('/cart',item)
-        return res.data
+        console.log("SEND TO BACKEND:", item); 
+
+        const res = await axiosi.post('/cart', item);
+
+        console.log("BACKEND RESPONSE:", res.data); 
+
+        return res.data;
     } catch (error) {
-        throw error.response.data
+        console.log("ERROR:", error.response?.data); 
+        throw error.response.data;
     }
 }
 export const fetchCartByUserId=async(id)=>{

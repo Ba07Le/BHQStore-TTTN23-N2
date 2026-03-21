@@ -215,8 +215,8 @@ useEffect(() => {
                                 <FormGroup onChange={handleBrandFilters}>
                                     {
                                         brands?.map((brand)=>(
-                                            <motion.div style={{width:"fit-content"}} whileHover={{x:5}} whileTap={{scale:0.9}}>
-                                                <FormControlLabel sx={{ml:1}} control={<Checkbox whileHover={{scale:1.1}} />} label={brand.name} value={brand._id} />
+                                            <motion.div style={{width:"fit-content"}} whileHover={{x:5}} whileTap={{scale:0.9}} key={brand._id}>
+                                                <FormControlLabel sx={{ml:1}} control={<Checkbox />} label={brand.name} value={brand._id} />
                                             </motion.div>
                                         ))
                                     }
@@ -236,8 +236,8 @@ useEffect(() => {
                                 <FormGroup onChange={handleCategoryFilters}>
                                     {
                                         categories?.map((category)=>(
-                                            <motion.div style={{width:"fit-content"}} whileHover={{x:5}} whileTap={{scale:0.9}}>
-                                                <FormControlLabel sx={{ml:1}} control={<Checkbox whileHover={{scale:1.1}} />} label={category.name} value={category._id} />
+                                            <motion.div style={{width:"fit-content"}} whileHover={{x:5}} whileTap={{scale:0.9}} key={category._id}>
+                                                <FormControlLabel sx={{ml:1}} control={<Checkbox />} label={category.name} value={category._id} />
                                             </motion.div>
                                         ))
                                     }
@@ -273,12 +273,12 @@ useEffect(() => {
                                         labelId="sort-dropdown"
                                         label="Sort"
                                         onChange={(e)=>setSort(e.target.value)}
-                                        value={sort}
+                                        value={sort || ""}
                                     >
                                         <MenuItem bgcolor='text.secondary' value={null}>Reset</MenuItem>
                                         {
                                             sortOptions.map((option)=>(
-                                                <MenuItem key={option} value={option}>{option.name}</MenuItem>
+                                                <MenuItem key={option.name} value={option}>{option.name}</MenuItem>
                                             ))
                                         }
                                     </Select>
