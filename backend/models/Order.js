@@ -5,14 +5,14 @@ const orderSchema=new Schema({
     user:{
         type:Schema.Types.ObjectId,
         ref:"User",
-        required:true
+        required:false // 🛠️ CHỈNH SỬA: Cho phép null để khách vãng lai đặt hàng
     },
     item:{
         type:[Schema.Types.Mixed],
         required:true
     },
     address:{
-        type:[Schema.Types.Mixed],
+        type:Schema.Types.Mixed, // 🛠️ CHỈNH SỬA: Bỏ dấu [] để nhận 1 Object địa chỉ (nhập tay hoặc từ list)
         required:true
     },
     status:{

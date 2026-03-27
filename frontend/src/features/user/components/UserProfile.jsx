@@ -107,8 +107,8 @@ export const UserProfile = () => {
                                 <Stack width={'100%'} component={'form'} noValidate onSubmit={handleSubmit(handleAddAddress)} rowGap={2}>
                     
                                         <Stack>
-                                            <Typography  gutterBottom>Nơi nhận</Typography>
-                                            <TextField placeholder='Nhà, Công ty, Văn phòng,...' {...register("type",{required:true})}/>
+                                            <Typography  gutterBottom>Người nhận / Nơi nhận</Typography>
+                                            <TextField placeholder='Tên người nhận, Nhà, Công ty, Văn phòng,...' {...register("type",{required:true})}/>
                                         </Stack>
                     
                     

@@ -50,6 +50,7 @@ function App() {
 
         <Route path='/cart' element={<CartPage />} />
         <Route path='/wishlist' element={<WishlistPage />} />
+        <Route path='/checkout' element={<CheckoutPage />} />
         
         <Route path='/signup' element={<SignupPage />} />
         <Route path='/login' element={<LoginPage />} />
@@ -73,7 +74,6 @@ function App() {
             <>
               
               <Route path='/profile' element={<Protected><UserProfilePage /></Protected>} />
-              <Route path='/checkout' element={<Protected><CheckoutPage /></Protected>} />
               <Route path='/order-success/:id' element={<Protected><OrderSuccessPage /></Protected>} />
               <Route path='/orders' element={<Protected><UserOrdersPage /></Protected>} />
               
