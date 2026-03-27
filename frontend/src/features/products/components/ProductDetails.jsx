@@ -167,26 +167,38 @@ export const ProductDetails = () => {
                                 flexDirection={is840 ? "column" : "row"} 
                                 columnGap={is990 ? "2rem" : "5rem"}
                                 rowGap={5}
+                                alignItems="flex-start" // QUAN TRỌNG: Ghim cả 2 cột (ảnh và text) lên trên cùng
                             >
                                
-                                <Stack sx={{ flexDirection: "row", columnGap: "2.5rem", flex: 1 }}>
+                                <Stack sx={{ flexDirection: "row", columnGap: "2.5rem", flex: 1, alignItems: "flex-start" }}>
+                                    {/* THÊM alignItems="flex-start" ĐỂ GHIM THUMBNAILS VÀ ẢNH CHÍNH LÊN TRÊN */}
                                     {!is1420 && (
-                                        <Stack sx={{ display: "flex", rowGap: '1.5rem', maxHeight: "500px", overflowY: "auto" }}>
+                                        <Stack sx={{ display: "flex", rowGap: '1rem', maxHeight: "500px", overflowY: "auto", pr: 1, flexShrink: 0 }}>
                                             {product?.images.map((image, index) => (
                                                 <Box 
                                                     key={index}
                                                     component={motion.div}
                                                     whileHover={{ scale: 1.05 }} 
-                                                    sx={{ width: "100px", cursor: "pointer", border: selectedImageIndex === index ? '2px solid black' : '1px solid #ddd' }} 
+                                                    sx={{ 
+                                                        width: "80px", 
+                                                        height: "80px", 
+                                                        cursor: "pointer", 
+                                                        border: selectedImageIndex === index ? '2px solid black' : '1px solid #ddd',
+                                                        borderRadius: '4px',
+                                                        overflow: 'hidden',
+                                                        flexShrink: 0,
+                                                        bgcolor: '#fff'
+                                                    }} 
                                                     onClick={() => setSelectedImageIndex(index)}
                                                 >
-                                                    <img style={{ width: "100%", aspectRatio: '1/1', objectFit: "contain" }} src={getImageUrl(image)} alt="thumb" />
+                                                    <img style={{ width: "100%", height: "100%", objectFit: "cover" }} src={getImageUrl(image)} alt={`thumb-${index}`} />
                                                 </Box>
                                             ))}
                                         </Stack>
                                     )}
                                     
-                                    <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                                    <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+                                        {/* THÊM alignItems="flex-start" CHO BOX CHỨA ẢNH CHÍNH */}
                                         {is1420 ? (
                                             <Box sx={{ width: '100%', maxWidth: '500px' }}>
                                                 <AutoPlaySwipeableViews index={activeStep} onChangeIndex={handleStepChange} enableMouseEvents>
@@ -243,13 +255,13 @@ export const ProductDetails = () => {
                                         </Typography>
                                     </Stack>
 
-                                                <Box
-  className="product-description"
-  sx={{ lineHeight: 1.7, color: "text.secondary" }}
-  dangerouslySetInnerHTML={{ __html: product?.description }}
-/>
+                                    <Box
+                                        className="product-description"
+                                        sx={{ lineHeight: 1.7, color: "text.secondary" }}
+                                        dangerouslySetInnerHTML={{ __html: product?.description }}
+                                    />
 
-<hr style={{ border: '0.5px solid #eee', width: '100%' }} />
+                                    <hr style={{ border: '0.5px solid #eee', width: '100%' }} />
 
                                    
                                     {!loggedInUser?.isAdmin && (

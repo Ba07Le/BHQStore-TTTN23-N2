@@ -11,6 +11,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Paper,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -200,62 +201,109 @@ export const AdminDashBoard = () => {
           </Stack>
         </Stack>
 
-        
         <Grid gap={is700 ? 1 : 2} container justifyContent="center">
-          {products.map((p) => (
-            <Stack key={p._id}>
-              <ProductCard
-                id={p._id}
-                title={p.title}
-                thumbnail={p.thumbnail}
-                brand={p.brand.name}
-                price={p.price}
-                isAdminCard
-              />
-              <Stack
-                direction="row"
-                justifyContent="flex-end"
-                gap={1}
-                px={2}
-                mt={1}
-              >
-                <Button
-                  component={Link}
-                  to={`/admin/product-update/${p._id}`}
-                  variant="contained"
-                  size="small"
-                >
-                  Cập nhật
-                </Button>
-                {p.isDeleted ? (
-                  <Button
-                    onClick={() => handleUnDelete(p._id)}
-                    variant="outlined"
-                    color="error"
-                    size="small"
-                  >
-                    Bỏ xoá
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => handleDelete(p._id)}
-                    variant="outlined"
-                    color="error"
-                    size="small"
-                  >
-                    Xoá
-                  </Button>
-                )}
-              </Stack>
-            </Stack>
-          ))}
-        </Grid>
+  {products.map((p) => (
+    <Stack
+      key={p._id}
+      component={Paper} // Ép thẻ Stack này thành 1 cái khung Card
+      elevation={1}     // Thêm hiệu ứng bóng mờ (box-shadow) giống hệt bên người dùng
+      sx={{ 
+        overflow: 'hidden',
+        borderRadius: 1,
+        // (Tuỳ chọn) Thêm hiệu ứng hover nhẹ cho Admin mượt mà hơn
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": { transform: "translateY(-4px)", boxShadow: 3 } 
+      }}
+    >
+       
+      <ProductCard
+        id={p._id}
+        title={p.title}
+        thumbnail={p.thumbnail}
+        brand={p.brand.name}
+        price={p.price}
+        isAdminCard={true} // Vẫn giữ nguyên để ẩn đi khung phụ bên trong
+      />
+      
+      <Stack
+        direction="row"
+        justifyContent="space-between" // Trải 2 nút ra 2 góc cho cân đối
+        alignItems="center"
+        gap={2}
+        px={2} // Khớp với lề p={2} bên trong ProductCard
+        pb={2} // Thêm lề dưới để nút không bị sát mép
+        mt="auto" // Nếu tiêu đề dài/ngắn khác nhau, nút vẫn luôn bám đáy
+      >
+        <Button
+          component={Link}
+          to={`/admin/product-update/${p._id}`}
+          variant="contained"
+          size="small"
+          sx={{ flex: 1, textTransform: 'none', bgcolor: 'black', '&:hover': { bgcolor: '#333' } }} // Cho màu nút giống màu "Thêm vào giỏ"
+        >
+          Cập nhật
+        </Button>
+       {p.isDeleted ? (
+  <Button
+    onClick={() => handleUnDelete(p._id)}
+    variant="contained" // Chuyển sang contained để nổi bật màu xanh
+    color="success"     // Màu xanh lá cây của MUI
+    size="small"
+    sx={{ 
+      flex: 1, 
+      textTransform: 'none', 
+      fontSize: '0.75rem',
+      fontWeight: 600 
+    }}
+  >
+    Khôi phục
+  </Button>
+) : (
+  <Button
+    onClick={() => handleDelete(p._id)}
+    variant="outlined"
+    color="error"
+    size="small"
+    sx={{ 
+      flex: 1, 
+      textTransform: 'none', 
+      fontSize: '0.75rem' 
+    }}
+  >
+    Xoá
+  </Button>
+)}
+      </Stack>
+    </Stack>
+  ))}
+</Grid>
 
         
-        <Stack alignSelf={is488?'center':'flex-end'} mr={is488?0:5} rowGap={2} p={is488?1:0}>
-                                <Pagination size={is488?'medium':'large'} page={page}  onChange={(e,page)=>setPage(page)} count={Math.ceil(totalResults/ITEMS_PER_PAGE)} variant="outlined" shape="rounded" />
-                                <Typography textAlign={'center'}>Từ trang {(page-1)*ITEMS_PER_PAGE+1} đến {page*ITEMS_PER_PAGE>totalResults?totalResults:page*ITEMS_PER_PAGE} có {totalResults} sản phẩm</Typography>
-                            </Stack>
+        <Stack
+  alignSelf={is488 ? 'center' : 'flex-end'}
+  mr={is488 ? 0 : 5}
+  rowGap={2}
+  p={is488 ? 1 : 0}
+>
+  <Pagination
+  size={is488 ? 'medium' : 'large'}
+  page={page}
+  onChange={(e, page) => setPage(page)}
+  count={Math.ceil(totalResults / ITEMS_PER_PAGE)}
+  variant="outlined"
+  shape="rounded"
+  siblingCount={0} /* Ép ẩn bớt các trang kề sát trang hiện tại */
+  boundaryCount={1} /* Luôn hiển thị 1 trang ở đầu và 1 trang ở cuối */
+/>
+
+  <Typography textAlign="center">
+    Trang {page} có{" "}
+    {Math.min(
+      ITEMS_PER_PAGE,
+      totalResults - (page - 1) * ITEMS_PER_PAGE
+    )} sản phẩm
+  </Typography>
+</Stack>
       </Stack>
     </>
   )

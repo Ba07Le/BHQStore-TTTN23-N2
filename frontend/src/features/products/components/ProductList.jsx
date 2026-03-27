@@ -318,10 +318,31 @@ useEffect(() => {
 
 
                                          
-                    <Stack alignSelf={is488?'center':'flex-end'} mr={is488?0:5} rowGap={2} p={is488?1:0}>
-                        <Pagination size={is488?'medium':'large'} page={page}  onChange={(e,page)=>setPage(page)} count={Math.ceil(totalResults/ITEMS_PER_PAGE)} variant="outlined" shape="rounded" />
-                        <Typography textAlign={'center'}>Từ trang {(page-1)*ITEMS_PER_PAGE+1} đến {page*ITEMS_PER_PAGE>totalResults?totalResults:page*ITEMS_PER_PAGE} có {totalResults} sản phẩm</Typography>
-                    </Stack>
+                    <Stack
+  alignSelf={is488 ? 'center' : 'flex-end'}
+  mr={is488 ? 0 : 5}
+  rowGap={2}
+  p={is488 ? 1 : 0}
+>
+  <Pagination
+  size={is488 ? 'medium' : 'large'}
+  page={page}
+  onChange={(e, page) => setPage(page)}
+  count={Math.ceil(totalResults / ITEMS_PER_PAGE)}
+  variant="outlined"
+  shape="rounded"
+  siblingCount={0} /* Ép ẩn bớt các trang kề sát trang hiện tại */
+  boundaryCount={1} /* Luôn hiển thị 1 trang ở đầu và 1 trang ở cuối */
+/>
+
+  <Typography textAlign="center">
+    Trang {page} có{" "}
+    {Math.min(
+      ITEMS_PER_PAGE,
+      totalResults - (page - 1) * ITEMS_PER_PAGE
+    )} sản phẩm
+  </Typography>
+</Stack>
 
                     </Stack>
 
