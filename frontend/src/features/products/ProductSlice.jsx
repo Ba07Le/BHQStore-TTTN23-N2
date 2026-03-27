@@ -88,10 +88,11 @@ const productSlice=createSlice({
             .addCase(fetchProductsAsync.pending,(state)=>{
                 state.productFetchStatus='pending'
             })
-            .addCase(fetchProductsAsync.fulfilled,(state,action)=>{
-                state.productFetchStatus='fullfilled'
-                state.products = action.payload?.data || []
-               state.totalResults = action.payload?.totalResults || 0
+            .addCase(fetchProductsAsync.fulfilled, (state, action) => {
+                state.productFetchStatus = 'fullfilled';
+                // Dữ liệu đã được Backend random sẵn nếu không có sort
+                state.products = action.payload?.data || [];
+                state.totalResults = action.payload?.totalResults || 0;
             })
             .addCase(fetchProductsAsync.rejected,(state,action)=>{
                 state.productFetchStatus='rejected'
@@ -147,7 +148,6 @@ const productSlice=createSlice({
     }
 })
 
- 
 export const selectProductStatus=(state)=>state.ProductSlice.status
 export const selectProducts=(state)=>state.ProductSlice.products
 export const selectProductTotalResults=(state)=>state.ProductSlice.totalResults
@@ -159,7 +159,6 @@ export const selectProductAddStatus=(state)=>state.ProductSlice.productAddStatus
 export const selectProductIsFilterOpen=(state)=>state.ProductSlice.isFilterOpen
 export const selectProductFetchStatus=(state)=>state.ProductSlice.productFetchStatus
 
- 
 export const {clearProductSuccessMessage,clearProductErrors,clearSelectedProduct,resetProductStatus,resetProductUpdateStatus,resetProductAddStatus,toggleFilters,resetProductFetchStatus}=productSlice.actions
 
 export default productSlice.reducer

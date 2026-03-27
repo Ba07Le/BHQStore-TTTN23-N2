@@ -1,18 +1,19 @@
 const Product = require("../models/Product");
- 
+const mongoose = require("mongoose"); // Thêm mongoose để xử lý ObjectId
+
 exports.create = async (req, res) => {
   try {
     const data = { ...req.body };
- 
+
     data.price = Number(data.price);
     data.stockQuantity = Number(data.stockQuantity);
     data.description = data.description || "";
- 
+
     if (!req.files?.thumbnail?.[0]) {
       return res.status(400).json({ message: "Cần có thumbnail sản phẩm" });
     }
     data.thumbnail = `/uploads/products/${req.files.thumbnail[0].filename}`;
- 
+
     if (!req.files?.images?.length) {
       return res.status(400).json({ message: "Cần có hình ảnh sản phẩm" });
     }
@@ -33,74 +34,73 @@ exports.create = async (req, res) => {
   }
 };
 
-
-
-
- 
+// --- HÀM GETALL ĐÃ ĐƯỢC CHỈNH SỬA ĐỂ RANDOM TOÀN BỘ DATABASE ---
 exports.getAll = async (req, res) => {
   try {
     const filter = {};
     const sort = {};
     let skip = 0;
-    let limit = 0;
+    let limit = 12; // Mặc định hiển thị 12 sản phẩm mỗi trang
 
+    // 1. Thiết lập Filter
     if (req.query.search) {
-  filter.title = { $regex: req.query.search, $options: "i" };
-}
-
-
+      filter.title = { $regex: req.query.search, $options: "i" };
+    }
 
     if (req.query.brand) {
-      filter.brand = { $in: req.query.brand };
+      const brands = Array.isArray(req.query.brand) ? req.query.brand : [req.query.brand];
+      filter.brand = { $in: brands.map(id => new mongoose.Types.ObjectId(id)) };
     }
 
     if (req.query.category) {
-      filter.category = { $in: req.query.category };
+      const categories = Array.isArray(req.query.category) ? req.query.category : [req.query.category];
+      filter.category = { $in: categories.map(id => new mongoose.Types.ObjectId(id)) };
     }
 
     if (req.query.user) {
       filter["isDeleted"] = false;
     }
 
-    if (req.query.sort) {
-      sort[req.query.sort] = req.query.order
-        ? req.query.order === "asc"
-          ? 1
-          : -1
-        : 1;
-    }
-
+    // 2. Thiết lập Phân trang
     if (req.query.page && req.query.limit) {
-      const pageSize = req.query.limit;
-      const page = req.query.page;
-
-      skip = pageSize * (page - 1);
-      limit = pageSize;
+      limit = parseInt(req.query.limit);
+      skip = limit * (parseInt(req.query.page) - 1);
     }
 
-    const totalDocs = await Product.find(filter)
-      .sort(sort)
-      .populate("brand")
-      .countDocuments()
-      .exec();
+    let results;
+    const totalDocs = await Product.countDocuments(filter);
 
-    const results = await Product.find(filter)
-      .sort(sort)
-      .populate("brand")
-      .skip(skip)
-      .limit(limit)
-      .exec();
+    // 3. Logic Random hoặc Sort/Search
+    // Nếu KHÔNG có Sort và KHÔNG có Search -> Random từ toàn bộ kho
+    if (!req.query.sort && !req.query.search) {
+      results = await Product.aggregate([
+        { $match: filter },
+        { $sample: { size: limit } }
+      ]);
+      results = await Product.populate(results, { path: "brand category" });
+    } 
+    // Nếu có Sort hoặc Search -> Trả về kết quả chính xác
+    else {
+      if (req.query.sort) {
+        sort[req.query.sort] = req.query.order === "asc" ? 1 : -1;
+      }
+      results = await Product.find(filter)
+        .sort(sort)
+        .populate("brand")
+        .populate("category")
+        .skip(skip)
+        .limit(limit)
+        .exec();
+    }
 
     res.set("X-Total-Count", totalDocs);
     res.status(200).json(results);
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({ message: "Không thể tải sản phẩm, vui lòng thử lại sau." });
+    res.status(500).json({ message: "Không thể tải sản phẩm, vui lòng thử lại sau." });
   }
 };
- 
+
 exports.getById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -115,19 +115,19 @@ exports.getById = async (req, res) => {
     });
   }
 };
- 
+
 exports.updateById = async (req, res) => {
   try {
     const { id } = req.params;
 
     const updateData = { ...req.body };
- 
+
     if (req.files?.thumbnail?.length) {
       updateData.thumbnail = `/uploads/products/${req.files.thumbnail[0].filename}`;
     } else if (req.body.oldThumbnail) {
       updateData.thumbnail = req.body.oldThumbnail;
     }
- 
+
     let images = [];
 
     if (req.body.oldImages) {
@@ -158,7 +158,6 @@ exports.updateById = async (req, res) => {
   }
 };
 
-
 exports.undeleteById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -176,7 +175,7 @@ exports.undeleteById = async (req, res) => {
     });
   }
 };
- 
+
 exports.deleteById = async (req, res) => {
   try {
     const { id } = req.params;
