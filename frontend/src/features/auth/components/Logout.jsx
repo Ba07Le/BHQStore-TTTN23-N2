@@ -4,19 +4,20 @@ import { logoutAsync, selectLoggedInUser } from '../AuthSlice'
 import { useNavigate } from 'react-router-dom'
 
 export const Logout = () => {
-    const dispatch=useDispatch()
-    const loggedInUser=useSelector(selectLoggedInUser)
-    const navigate=useNavigate()
+    const dispatch = useDispatch()
+    const loggedInUser = useSelector(selectLoggedInUser)
+    const navigate = useNavigate()
 
-    useEffect(()=>{
+    useEffect(() => {
         dispatch(logoutAsync())
-    },[])
+    }, [dispatch]) // Thêm dispatch vào dependency cho đúng chuẩn React
 
-    useEffect(()=>{
-        if(!loggedInUser){
-            navigate("/login")
+    useEffect(() => {
+        // Sửa "/homepage" thành "/" vì Route trang chủ của Bảo là "/"
+        if (!loggedInUser) {
+            navigate("/", { replace: true }) 
         }
-    },[loggedInUser])
+    }, [loggedInUser, navigate])
 
   return (
     <></>

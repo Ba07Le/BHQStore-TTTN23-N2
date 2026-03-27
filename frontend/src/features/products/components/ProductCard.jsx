@@ -7,7 +7,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectWishlistItems } from '../../wishlist/WishlistSlice';
 import { selectLoggedInUser } from '../../auth/AuthSlice';
-import { addToCartAsync, selectCartItems } from '../../cart/CartSlice';
+import { addToCartAsync, selectCartItems, addToGuestCart } from '../../cart/CartSlice';
 import { motion } from 'framer-motion'
 import { getImageUrl } from '../../../utils/imageUrl';
 
@@ -30,11 +30,28 @@ export const ProductCard = ({ id, title, price, thumbnail, brand, stockQuantity,
     const isProductAlreadyinWishlist = wishlistItems.some((item) => item.product._id === id)
     const isProductAlreadyInCart = cartItems.some((item) => item.product._id === id)
 
+    // --- PHẦN CHỈNH SỬA THEO YÊU CẦU ---
     const handleAddToCart = (e) => {
         e.stopPropagation()
-        const data = { user: loggedInUser?._id, product: id }
-        dispatch(addToCartAsync(data))
+        
+        const productData = { 
+            _id: id, 
+            title, 
+            price, 
+            thumbnail, 
+            brand: { name: brand } 
+        };
+
+        if (loggedInUser) {
+            // Nếu có user: Gọi API Backend như cũ
+            const data = { user: loggedInUser._id, product: id };
+            dispatch(addToCartAsync(data));
+        } else {
+            // Nếu là khách: Gọi action lưu tạm vào máy (LocalStorage)
+            dispatch(addToGuestCart(productData));
+        }
     }
+    // --- HẾT PHẦN CHỈNH SỬA ---
 
     return (
         <Stack

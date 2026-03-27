@@ -16,6 +16,7 @@ import {
   useMediaQuery,
   useTheme,
   Divider,
+  Button, // Thêm Button vào đây để dùng cho nút Đăng nhập/Đăng ký
 } from '@mui/material'
 
 import MenuIcon from '@mui/icons-material/Menu'
@@ -75,7 +76,7 @@ export const Navbar = ({ isProductList = false }) => {
       sx={{
         backgroundColor: '#fff',
         borderBottom: '1px solid #eee',
-        height: 64,                 // ⚠️ CỐ ĐỊNH CHIỀU CAO
+        height: 64, // ⚠️ CỐ ĐỊNH CHIỀU CAO
         justifyContent: 'center',
       }}
     >
@@ -149,13 +150,38 @@ export const Navbar = ({ isProductList = false }) => {
             </IconButton>
           </Badge>
 
-          <Tooltip title="Tài khoản">
-            <IconButton onClick={handleOpenUserMenu}>
-              <Avatar sx={{ width: 36, height: 36 }}>
-                {userInfo?.name?.charAt(0)}
-              </Avatar>
-            </IconButton>
-          </Tooltip>
+          {/* SỬA TẠI ĐÂY: Kết hợp kiểm tra token (loggedInUser) và userInfo */}
+          {loggedInUser && userInfo ? (
+            <Tooltip title="Tài khoản">
+              <IconButton onClick={handleOpenUserMenu}>
+                <Avatar sx={{ width: 36, height: 36, bgcolor: '#1976d2' }}>
+                  {userInfo?.name?.charAt(0)}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Stack direction="row" spacing={1}>
+              <Button
+                component={Link}
+                to="/login"
+                variant="text"
+                sx={{ textTransform: 'none', fontWeight: 600 }}
+              >
+                Đăng nhập
+              </Button>
+              {!isMobile && (
+                <Button
+                  component={Link}
+                  to="/signup"
+                  variant="contained"
+                  disableElevation
+                  sx={{ textTransform: 'none', borderRadius: 2 }}
+                >
+                  Đăng ký
+                </Button>
+              )}
+            </Stack>
+          )}
         </Stack>
       </Toolbar>
 
@@ -172,6 +198,7 @@ export const Navbar = ({ isProductList = false }) => {
           },
         }}
       >
+        {/* SỬA TẠI ĐÂY: Dùng optional chaining ?. để tránh lỗi khi logout nửa chừng */}
         <Box px={2} py={1}>
           <Typography fontWeight={600}>{userInfo?.name}</Typography>
           <Typography variant="caption" color="text.secondary">
@@ -194,4 +221,4 @@ export const Navbar = ({ isProductList = false }) => {
       </Menu>
     </AppBar>
   )
-}
+} 

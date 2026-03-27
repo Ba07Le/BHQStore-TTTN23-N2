@@ -1,5 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import { fetchLoggedInUserById, updateUserById } from './UserApi'
+import { logoutAsync } from '../auth/AuthSlice';
 
 const initialState={
     status:"idle",
@@ -45,6 +46,10 @@ const userSlice=createSlice({
             .addCase(updateUserByIdAsync.rejected,(state,action)=>{
                 state.status='rejected'
                 state.errors=action.error
+            })
+            .addCase(logoutAsync.fulfilled, (state) => {
+                state.userInfo = null;
+                state.status = 'idle';
             })
     }
 })
