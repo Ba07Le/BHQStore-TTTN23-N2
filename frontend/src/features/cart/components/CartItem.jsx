@@ -44,13 +44,17 @@ export const CartItem = ({id,thumbnail,title,category,brand,price,quantity,stock
         }
     }
 
-    const handleProductRemove = () => {
-        if (loggedInUser) {
-            dispatch(deleteCartItemByIdAsync(id))
-        } else {
-            dispatch(removeFromGuestCart(id)) // 🛠️ Xử lý cho khách
-        }
+    const isMongoId = id.length === 24
+
+const handleProductRemove = () => {
+    console.log("DELETE ID:", id)
+
+    if (isMongoId) {
+        dispatch(deleteCartItemByIdAsync(id)) // chỉ khi là MongoID
+    } else {
+        dispatch(removeFromGuestCart(id)) // guest
     }
+}
 
     return (
         // ... phần return giữ nguyên như code cũ của Bảo ...
