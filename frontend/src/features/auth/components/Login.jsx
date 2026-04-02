@@ -19,14 +19,20 @@ export const Login = () => {
   const is480 = useMediaQuery(theme.breakpoints.down(480))
 
   
+  // 🛠️ SỬA LỖI ĐIỀU HƯỚNG PHÂN QUYỀN TẠI ĐÂY
   useEffect(() => {
     if (loggedInUser && loggedInUser?.isVerified) {
-      navigate("/")
+      // Nếu là Admin thì đi tới Dashboard, ngược lại đi tới Trang chủ
+      if (loggedInUser.isAdmin) {
+        navigate("/admin/dashboard")
+      } else {
+        navigate("/")
+      }
     }
     else if (loggedInUser && !loggedInUser?.isVerified) {
       navigate("/verify-otp")
     }
-  }, [loggedInUser])
+  }, [loggedInUser, navigate]) // Thêm navigate vào dependency cho chuẩn
 
   // show error
   useEffect(() => {

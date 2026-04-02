@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { addToGuestCart } from '../../cart/CartSlice'
 import { useNavigate, useParams } from 'react-router-dom'
 import { 
     clearSelectedProduct, 
@@ -126,10 +127,17 @@ export const ProductDetails = () => {
     }, [dispatch])
 
     const handleAddToCart = () => {
+    if (loggedInUser && loggedInUser._id) {
+        // ✅ USER → gọi API
         const item = { user: loggedInUser._id, product: id, quantity }
         dispatch(addToCartAsync(item))
-        setQuantity(1)
+    } else {
+        // ✅ GUEST → localStorage
+        dispatch(addToGuestCart(product))
     }
+
+    setQuantity(1)
+}
 
     const handleDecreaseQty = () => { quantity > 1 && setQuantity(quantity - 1) }
     const handleIncreaseQty = () => {

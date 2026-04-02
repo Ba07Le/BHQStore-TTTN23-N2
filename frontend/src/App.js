@@ -16,7 +16,6 @@ import "./assets/productDescription.css";
 import AIChatWidget from "./components/AIChatWidget";
 import { fetchAllBrandsAsync } from './features/brands/BrandSlice';
 import { fetchGuestCart } from './features/cart/CartSlice';
-
 import { fetchAllCategoriesAsync } from './features/categories/CategoriesSlice';
 
 function App() {
@@ -24,7 +23,6 @@ function App() {
   const isAuthChecked = useSelector(selectIsAuthChecked);
   const loggedInUser = useSelector(selectLoggedInUser);
 
-  // 🛠️ SỬA LỖI TẠI ĐÂY: Gọi Hook trực tiếp, không đặt trong IF
   useAuthCheck();
   useFetchLoggedInUserDetails(loggedInUser); 
 
@@ -32,10 +30,9 @@ function App() {
     if (!loggedInUser) {
         dispatch(fetchGuestCart());
     }
-}, [dispatch, loggedInUser]);
+  }, [dispatch, loggedInUser]);
 
   useEffect(() => {
-    // Gọi cả 2 cái này thì khi đăng xuất khách mới thấy đủ danh sách
     dispatch(fetchAllCategoriesAsync());
     dispatch(fetchAllBrandsAsync()); 
   }, [dispatch]);
@@ -44,7 +41,11 @@ function App() {
     createRoutesFromElements(
       <>
         {/* --- CÁC ROUTE PUBLIC (KHÔNG CẦN ĐĂNG NHẬP) --- */}
-        <Route path='/' element={<HomePage />} />
+        {/* 🛠️ SỬA TẠI ĐÂY: Nếu là Admin đang ở "/", tự động chuyển hướng vào Dashboard */}
+        <Route path='/' element={
+          loggedInUser?.isAdmin ? <Navigate to="/admin/dashboard" replace /> : <HomePage />
+        } />
+        
         <Route path='/products' element={<HomePage />} />
         <Route exact path='/product-details/:id' element={<ProductDetailsPage />} />
 
@@ -72,11 +73,9 @@ function App() {
             </>
           ) : (
             <>
-              
               <Route path='/profile' element={<Protected><UserProfilePage /></Protected>} />
               <Route path='/order-success/:id' element={<Protected><OrderSuccessPage /></Protected>} />
               <Route path='/orders' element={<Protected><UserOrdersPage /></Protected>} />
-              
             </>
           )
         }
